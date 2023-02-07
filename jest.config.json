@@ -1,0 +1,10 @@
+{
+  "testEnvironment": "node",
+  "collectCoverageFrom": ["./src/**"],
+  "coverageThreshold": {
+    "global": {
+      "lines": 80,
+      "functions": 80
+    }
+  }
+}

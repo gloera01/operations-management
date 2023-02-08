@@ -5,7 +5,7 @@ import passwordService from '../../services/passwordService';
 
 import { jwtSecret } from '../../../config';
 import { handleAsync } from '../../commons/validator';
-import { loginValidator } from '../../validators/users';
+import { loginValidator } from '../../validators/auth';
 
 export const login = async (req, res) => {
   const httpResponse = new HttpResponseHandler(res);

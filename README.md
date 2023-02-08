@@ -24,8 +24,11 @@ This is a web api for users management
 
 ### Routes / Endpoints
 
+- /auth
 - /users
 - /accounts
+- /accounts/:accountId/members
+- /operations
 
 ## Swagger documentation
 
@@ -53,15 +56,47 @@ TODO: add details how to view coverage report
 
 ## Todos / pendings
 
-- Configure authentication
-  - Review login endpoint
-  - Review auth middleware
-- Define model schemas
-  - define operation schema
-  - define roles and permissions process
-- Add full unit tests for 1 controller (miercoles)
-- Create signup endpoint (miercoles)
-  - consider user role and permissions
-- Create signup unit tests (miercoles)
-- Implement system logger (jueves)
-- Implement swagger on 1 endpoint (jueves)
+### Model schemas
+
+done
+
+### Roles permissions
+
+User permissions will be validated per role on a middleware apart before an action occurs (user creation, account creation, etc)
+
+### Unit tests
+
+- Add full UT for 1 controller (auth)
+
+### Endpoints development
+
+- Auth controller
+  - login
+  - reset password?
+- Users controller
+  - create
+  - Read
+  - Update
+  - Delete
+- Accounts controller
+  - create
+  - Read
+  - Update
+  - Delete
+- Account members controller
+  - Create (add a member in an account)
+  - Update?
+  - Delete?
+- Operations history controller
+  - Create
+  - Read
+
+### System logger
+
+- Research about logger options
+- Implement system logger
+
+### Swagger documentation
+
+- Research swagger library
+- Implement swagger on 1 endpoint

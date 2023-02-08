@@ -29,7 +29,6 @@ const UserSchema = new Schema({
     required: false,
     default: true,
   },
-  // permissions: [{ type: String, required: true }], TBD
   role: {
     type: String,
     required: true,

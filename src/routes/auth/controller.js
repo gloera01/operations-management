@@ -1,14 +1,13 @@
-import HttpResponseHandler from '../../commons/httpResponseHandler';
 import jsonwebtoken from 'jsonwebtoken';
+import httpResponseHandler from '../../commons/httpResponseHandler';
 import UserModel from '../../models/User';
-import passwordService from '../../services/passwordService';
+import passwordServiceFactory from '../../services/password/passwordServiceFactory';
 
 import { jwtSecret } from '../../../config';
 import { handleAsync } from '../../commons/validator';
 import { loginValidator } from '../../validators/auth';
 
-export const login = async (req, res) => {
-  const httpResponse = new HttpResponseHandler(res);
+export const login = async (req) => {
   try {
     // validate request body
     const validationResponse = await handleAsync([
@@ -19,7 +18,7 @@ export const login = async (req, res) => {
       // TODO:
       // log error
       console.log('Validation errors');
-      return httpResponse.badRequest(validationResponse.stringError);
+      return httpResponseHandler.badRequest(validationResponse.stringError);
     }
 
     const { email, password } = req.body;
@@ -29,18 +28,21 @@ export const login = async (req, res) => {
     if (!foundUser) {
       // TODO: implement logger
       console.log('User is not found');
-      return httpResponse.unauthorized('Invalid credentials');
+      return httpResponseHandler.unauthorized('Invalid credentials');
     }
 
     // verify credentials
-    const passwordMatch = await passwordService.match(
+    const passwordService = passwordServiceFactory.createService(
+      foundUser.role
+    );
+    const passwordMatch = await passwordService.verify(
       password,
       foundUser.password
     );
     if (!passwordMatch) {
       // TODO: implement logger
       console.log('Password is incorrect');
-      return httpResponse.unauthorized('Invalid credentials');
+      return httpResponseHandler.unauthorized('Invalid credentials');
     }
 
     // generate access token with HMAC SHA256 (default)
@@ -56,11 +58,11 @@ export const login = async (req, res) => {
       }
     );
 
-    return httpResponse.ok({ accessToken: token });
+    return httpResponseHandler.ok({ accessToken: token });
   } catch (error) {
     // TODO: implement logger
     console.log(error);
-    return httpResponse.serverError(error);
+    return httpResponseHandler.serverError(error);
   }
 };
 

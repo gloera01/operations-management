@@ -1,39 +1,41 @@
 import passport from 'passport';
-import HttpResponseHandler from '../commons/httpResponseHandler';
+import httpResponseHandler from '../commons/httpResponseHandler';
 
-const generateMiddleware = () => {
-  return (req, res, next) => {
-    const httpResponse = new HttpResponseHandler(res);
-    const authenticator = passport.authenticate(
-      'jwt',
-      { session: false },
-      (err, user, infoErr) => {
-        if (err) {
-          // TODO: implement logger
-          console.log(err);
-          return httpResponse.serverError(err);
-        }
+const requireAuth = (req, res, next) => {
+  // TODO: implement logger
+  console.log('RequireAuth middleware:');
 
-        if (infoErr) {
-          // TODO: implement logger
-          console.log(infoErr);
-          return httpResponse.unauthorized(infoErr.message);
-        }
-
-        if (!user) {
-          // TODO: implement logger
-          console.log('User was not found');
-          return httpResponse.unauthorized(
-            'Not authorized to perform this request'
-          );
-        }
-
-        req.user = user;
-        next();
+  return passport.authenticate(
+    'jwt',
+    { session: false },
+    (err, user, infoErr) => {
+      if (err) {
+        // TODO: implement logger
+        console.log(err);
+        const response = httpResponseHandler.serverError(err);
+        return res.status(response.statusCode).json(response);
       }
-    );
-    return authenticator(req, res, next);
-  };
+
+      if (infoErr) {
+        // TODO: implement logger
+        console.log(infoErr);
+        const response = httpResponseHandler.unauthorized(infoErr.message);
+        return res.status(response.statusCode).json(response);
+      }
+
+      if (!user) {
+        // TODO: implement logger
+        console.log('User was not found');
+        const response = httpResponseHandler.unauthorized(
+          'Not authorized to perform this request'
+        );
+        return res.status(response.statusCode).json(response);
+      }
+
+      req.user = user;
+      next();
+    }
+  )(req, res, next);
 };
 
-export default generateMiddleware();
+export default requireAuth;

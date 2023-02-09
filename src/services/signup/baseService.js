@@ -28,7 +28,7 @@ class BaseService {
     }
 
     // hash incoming password
-    const hashedPassword = await this.passwordService.generateHash(
+    const hashedPassword = await this.passwordService.hashify(
       userData.password
     );
     const userDTO = { ...userData, password: hashedPassword, pets: [] };

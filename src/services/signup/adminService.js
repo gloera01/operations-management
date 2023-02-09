@@ -1,14 +1,14 @@
 import BaseService from './baseService';
-import { signupUserValidator } from '../../validators/users';
+import { signupAdminValidator } from '../../validators/users';
 
 class UserService extends BaseService {
   constructor(userModel, responseHandler, passwordService) {
     super(userModel, responseHandler, passwordService);
   }
 
-  async validate(userDTO) {
+  async validate(adminUserDTO) {
     // validation for specific user role
-    return signupUserValidator.validateAsync(userDTO);
+    return signupAdminValidator.validateAsync(adminUserDTO);
   }
 }
 

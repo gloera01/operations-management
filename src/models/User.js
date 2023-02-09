@@ -38,12 +38,15 @@ const UserSchema = new Schema({
     type: String,
     required: false,
   },
-  techSkills: [
-    {
-      type: String,
-      required: false,
-    },
-  ],
+  techSkills: {
+    type: [
+      {
+        type: String,
+        required: false,
+      },
+    ],
+    default: undefined,
+  },
   resumeLink: { type: String, required: false },
 });
 

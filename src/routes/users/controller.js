@@ -1,11 +1,12 @@
 import httpResponseHandler from '../../commons/httpResponseHandler';
 import UserModel from '../../models/User';
-import passwordService from '../../services/passwordService';
-import signupServiceFactory from '../../services/signupServiceFactory';
+import passwordServiceFactory from '../../services/password/passwordServiceFactory';
+import signupServiceFactory from '../../services/signup/signupServiceFactory';
 
 export const create = async (req) => {
   try {
     const { role: userType } = req.body;
+    const passwordService = passwordServiceFactory.createService(userType);
     const signupService = signupServiceFactory.createService(
       userType,
       UserModel,

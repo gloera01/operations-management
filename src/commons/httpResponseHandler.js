@@ -1,97 +1,96 @@
 import statusCodes from '../constants/httpCodes';
 
-const baseResponse = {
-  statusCode: 200,
-  message: 'Success',
-  errorMessage: null,
-  payload: null,
+export const makeCustom = (customResponse) => customResponse;
+
+export const ok = (payload, message = 'Success') => ({
+  statusCode: statusCodes.ok,
+  message,
+  payload,
+});
+
+export const created = (payload, message = 'Created') => ({
+  statusCode: statusCodes.created,
+  message,
+  payload,
+});
+
+export const accepted = (payload, message = 'Accepted') => ({
+  statusCode: statusCodes.accepted,
+  message,
+  payload,
+});
+
+export const badRequest = (
+  errorMessage = 'Validation errors',
+  message = 'Bad request'
+) => ({
+  statusCode: statusCodes.badRequest,
+  errorMessage,
+  message,
+});
+
+export const unauthorized = (
+  errorMessage = 'Need additional permissions to perform this action',
+  message = 'Unauthorized'
+) => ({
+  statusCode: statusCodes.unauthorized,
+  errorMessage,
+  message,
+});
+
+export const notFound = (
+  errorMessage = 'Resource was not found',
+  message = 'Not found'
+) => ({
+  message,
+  errorMessage,
+  statusCode: statusCodes.notFound,
+});
+
+export const forbidden = (
+  errorMessage = 'Additional permissions are required',
+  message = 'Forbidden'
+) => ({
+  errorMessage,
+  message,
+  statusCode: statusCodes.forbidden,
+});
+
+export const conflict = (
+  errorMessage = 'Entity already exists',
+  message = 'Conflict'
+) => ({
+  statusCode: statusCodes.conflict,
+  errorMessage,
+  message,
+});
+
+export const unprocessableEntity = (
+  errorMessage = 'Entity cannot be proccessed at this moment, please try again later',
+  message = 'Unprocessable Entity'
+) => ({ errorMessage, message, statusCode: statusCodes.unprocessableEntity });
+
+export const serverError = (
+  errorMessage,
+  message = 'Internal server error'
+) => ({
+  statusCode: statusCodes.internalServerError,
+  message,
+  errorMessage,
+});
+
+const httpResponseHandler = {
+  makeCustom,
+  ok,
+  created,
+  accepted,
+  badRequest,
+  unauthorized,
+  forbidden,
+  notFound,
+  conflict,
+  unprocessableEntity,
+  serverError,
 };
 
-class HttpResponseHandler {
-  constructor(expressResponse) {
-    this.#res = expressResponse;
-  }
-
-  #res = null;
-
-  #setResponse(response) {
-    this.#res.status(response.statusCode).json(response);
-    return response;
-  }
-
-  makeCustom(customResponse) {
-    this.#res.status(customResponse.statusCode).json(customResponse);
-    return customResponse;
-  }
-
-  ok(payload, customMessage = 'Success') {
-    const response = {
-      statusCode: statusCodes.ok,
-      message: customMessage,
-      payload,
-    };
-    this.#res.status(statusCodes.ok).json(response);
-    return response;
-  }
-
-  created(payload, message = 'Created') {
-    return this.#setResponse({
-      statusCode: statusCodes.created,
-      message,
-      payload,
-    });
-  }
-
-  accepted(payload, message = 'Accepted') {
-    return this.#setResponse({
-      statusCode: statusCodes.accepted,
-      message,
-      payload,
-    });
-  }
-
-  badRequest(errorMessage = 'Validation errors', message = 'Bad request') {
-    return this.#setResponse({
-      statusCode: statusCodes.badRequest,
-      errorMessage,
-      message,
-    });
-  }
-
-  unauthorized(
-    errorMessage = 'Need additional permissions to perform this action',
-    message = 'Unauthorized'
-  ) {
-    return this.#setResponse({
-      statusCode: statusCodes.unauthorized,
-      errorMessage,
-      message,
-    });
-  }
-
-  notFound(errorMessage = 'Resource was not found', message = 'Not found') {
-    return this.#setResponse({
-      message,
-      errorMessage,
-      statusCode: statusCodes.notFound,
-    });
-  }
-
-  conflict(errorMessage = 'Entity already exists', message = 'Conflict') {
-    return this.#setResponse({
-      statusCode: statusCodes.conflict,
-      errorMessage,
-      message,
-    });
-  }
-
-  serverError(error) {
-    return this.#setResponse({
-      statusCode: statusCodes.internalServerError,
-      message: 'Internal server error',
-      errorMessage: error.message,
-    });
-  }
-}
-
-export default HttpResponseHandler;
+export default httpResponseHandler;

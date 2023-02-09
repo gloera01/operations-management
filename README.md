@@ -30,7 +30,7 @@ This is a web api for users management
 - /accounts/:accountId/members
 - /operations
 
-## Swagger documentation
+### Swagger documentation
 
 TBD
 
@@ -75,6 +75,8 @@ User permissions will be validated per role on a middleware apart before an acti
   - reset password?
 - Users controller
   - create
+    - adjust httpResponseHandler and remove (express object)
+    - implement user service and base service functionality
   - Read
   - Update
   - Delete

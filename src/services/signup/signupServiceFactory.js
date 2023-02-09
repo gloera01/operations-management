@@ -1,6 +1,6 @@
-import UserService from './signup/userService';
-import AdminService from './signup/adminService';
-import roles from '../constants/roles';
+import UserService from './userService';
+import AdminService from './adminService';
+import roles from '../../constants/roles';
 
 export const createService = (
   role,

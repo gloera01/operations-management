@@ -5,11 +5,11 @@ const requirePermissions = (roles) => {
     // TODO: implement logger
     console.log('RequirePermissions middleware');
 
-    const { user } = req;
+    const userRole = req?.user?.role;
 
-    if (!roles.includes(user.role)) {
+    if (!roles.includes(userRole)) {
       const response = httpResponseHandler.forbidden(
-        `Action forbidden for ${user.role}`
+        `Action available only for roles: (${roles.toString()})`
       );
       return res.status(response.statusCode).json(response);
     }

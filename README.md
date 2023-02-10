@@ -93,6 +93,7 @@ User permissions will be validated per role on a middleware apart before an acti
   - Delete
 - Accounts controller
   - create (WIP)
+    - define behavior of history, focuses on account or just members assignment, unassignment
   - Read
   - Update
   - Delete

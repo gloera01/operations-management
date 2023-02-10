@@ -1,4 +1,8 @@
 export const handleAsync = async (validators) => {
+  if (!Array.isArray(validators)) {
+    throw new Error('Invalid validators argument, expect to be array');
+  }
+
   const validationResults = await Promise.allSettled(validators);
 
   const errors = validationResults

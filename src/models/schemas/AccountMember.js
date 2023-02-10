@@ -1,13 +1,13 @@
 import { Schema } from 'mongoose';
 
 const AccountMember = new Schema({
-  assignedDate: {
+  assignationStartDate: {
     type: Date,
     required: false,
-    default: Date.now,
   },
-  assignationEndDate: { type: Date, required: true },
+  assignationEndDate: { type: Date, required: false },
   name: { type: String, required: true },
+  email: { type: String, required: true },
 });
 
 export default AccountMember;

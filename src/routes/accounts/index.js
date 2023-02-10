@@ -1,21 +1,15 @@
 import { Router } from 'express';
-import { ADMIN, SUPERADMIN } from '../../constants/roles';
-import usersController from './controller';
+import controller from './controller';
+import { SUPERADMIN, ADMIN } from '../../constants/roles';
 
 import withHttpResponse from '../../middlewares/withHttpResponse';
 import requirePermissions from '../../middlewares/requirePermissions';
 import requireAuth from '../../middlewares/requireAuth';
 
-const router = Router().post(
+const router = Router({ mergeParams: true }).post(
   '/',
   requireAuth,
   requirePermissions([ADMIN, SUPERADMIN]),
-  withHttpResponse(usersController.create)
+  withHttpResponse(controller.create)
 );
-
-// TODO:
-// get by id
-// patch user endpoint
-// delete user (inactivate)
-
 export default router;

@@ -8,8 +8,7 @@ This is a web api for users management
 
 - Clone the repo at: https://github.com/gloera01/operations-management
 - Configure environment
-  - Create a `.env` file
-  - must have mongoDB installed
+  - Create a `.env` file following the example file `.env.example`
 - Install dependencies
 
   - in the root folder run the following command `npm install`
@@ -30,11 +29,28 @@ This is a web api for users management
 - /accounts/:accountId/members
 - /operations
 
-### Swagger documentation
+### Documentation
 
-TBD
+Api endpoints are documented on swagger openapi specification
 
-## Database mongo
+### Middlewares
+
+#### WithHttpResponse
+
+Description
+Where to use
+
+#### RequireAuth
+
+#### RequirePermissions
+
+### Security
+
+Every endpoint is protected with JWT authentication
+
+## Database
+
+The app database was designed with mongodb architecture using mongoose as the main ORM.
 
 TODO: add a link to a document containing the collections.
 
@@ -43,16 +59,13 @@ TODO: add a link to a document containing the collections.
 Run `npm run test`
 
 - Controllers
+- Services
 
 ### Coverage
 
 Run `npm run test:coverage` for coverage details
 
 TODO: add details how to view coverage report
-
-## Notes
-
-`npm express-async-errors` library helps with erroring when we use async functions with express
 
 ## Todos / pendings
 
@@ -71,17 +84,15 @@ User permissions will be validated per role on a middleware apart before an acti
 ### Endpoints development
 
 - Auth controller
-  - login
+  - login (ok)
   - reset password?
 - Users controller
-  - create
-    - adjust httpResponseHandler and remove (express object)
-    - implement user service and base service functionality
+  - create (ok)
   - Read
   - Update
   - Delete
 - Accounts controller
-  - create
+  - create (WIP)
   - Read
   - Update
   - Delete
@@ -102,3 +113,7 @@ User permissions will be validated per role on a middleware apart before an acti
 
 - Research swagger library
 - Implement swagger on 1 endpoint
+
+## Notes
+
+`npm express-async-errors` library helps with erroring when we use async functions with express

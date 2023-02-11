@@ -93,6 +93,8 @@ User permissions will be validated per role on a middleware apart before an acti
   - Delete
 - Accounts controller
   - create (WIP)
+    - manually test creating accounts with team members
+      - existing users and non existing
     - define behavior of history, focuses on members assignment, unassignment
     - populate members data and operations manager data on result response
   - Read

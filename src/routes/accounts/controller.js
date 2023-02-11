@@ -29,31 +29,47 @@ export const create = async (req) => {
       return httpResponseHandler.conflict('An account name is already in use.');
     }
 
-    // TODO:
-    // verify operationsManager exists
+    // verify operations manager exists
     const opManager = await UserModel.findById(body.operationsManager);
     if (!opManager) {
       // TODO: implement logger
       console.log('Operations manager does not exist');
       return httpResponseHandler.badRequest(
-        'Invalid operations manager, cannot be found'
+        'Invalid OperationsManager, cannot be found on DB'
+      );
+    }
+
+    const teamMembersService = new AccountMembersService(UserModel);
+
+    // verify incoming members are existing DB users
+    const allMembersExistOnDB = await teamMembersService.verifyExist(
+      body.members
+    );
+    if (allMembersExistOnDB.notFound.length) {
+      // TODO: implement logger
+      console.log('There are some team members which are not valid');
+      return httpResponseHandler.badRequest(
+        `Those team members were not found on DB, ${JSON.stringify(
+          allMembersExistOnDB.notFound
+        )}`
       );
     }
 
     // handle team members
-    const teamMembersService = new AccountMembersService();
-    const teamMembers = teamMembersService.mapIntoDBMembers(req.body.members);
+    const dbMembers = teamMembersService.mapIntoDBMembers(body.members);
 
     // input for DB collection
     const accountDB = {
       name: body.name,
       client: body.client,
       operationsManager: body.operationsManager,
-      members: teamMembers,
+      members: dbMembers,
     };
 
     // save account in DB
-    const newAccount = await new AccountModel(accountDB).save();
+    const newAccount = await (
+      await new AccountModel(accountDB).save()
+    ).populate();
     const response = httpResponseHandler.created(
       newAccount,
       'Account created successfully'

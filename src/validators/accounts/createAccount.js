@@ -8,8 +8,8 @@ export default Joi.object({
     .default([])
     .items(
       Joi.object({
-        assignationStartDate: Joi.date().required(),
-        assignationEndDate: Joi.date().required(),
+        startDate: Joi.date().required(),
+        endDate: Joi.date().required(),
         userId: Joi.string().required(),
       }).optional()
     ),

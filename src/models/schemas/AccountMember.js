@@ -1,14 +1,26 @@
-import { Schema } from 'mongoose';
+import { Schema, ObjectId } from 'mongoose';
+
+const Assignation = new Schema(
+  {
+    startDate: {
+      type: Date,
+      required: true,
+    },
+    endDate: {
+      type: Date,
+      required: true,
+    },
+  },
+  { _id: false }
+);
 
 const AccountMember = new Schema(
   {
-    assignationStartDate: {
-      type: Date,
-      required: false,
+    assignation: {
+      type: Assignation,
+      required: true,
     },
-    assignationEndDate: { type: Date, required: false },
-    name: { type: String, required: true },
-    email: { type: String, required: true },
+    user: { type: ObjectId, ref: 'User', required: true },
   },
   { _id: false }
 );

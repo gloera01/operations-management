@@ -18,18 +18,24 @@ class AccountMembersService {
   }
 
   async verifyExist(incomingMembers = []) {
+    const handleGetUser = async (userId) => {
+      const user = await this.#userModel.findById(userId);
+      return { id: userId, user };
+    };
+
     const foundUsersResults = await Promise.allSettled(
-      incomingMembers.map((mem) => this.#userModel.findById(mem.userId))
+      incomingMembers.map((m) => handleGetUser(m.userId))
     );
 
     const found = [];
     const notFound = [];
 
-    foundUsersResults.forEach((user) => {
+    foundUsersResults.forEach((pr) => {
+      const { user, id } = pr.value;
       if (user) {
         found.push(user);
       } else {
-        notFound.push(user);
+        notFound.push(id);
       }
     });
 

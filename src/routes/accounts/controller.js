@@ -68,11 +68,16 @@ export const create = async (req) => {
 
     // save account in DB
     let newAccount = new AccountModel(accountDB);
-    newAccount.populate({
-      path: 'operationsManager',
-      select: ['name', 'email'],
-    });
-    newAccount.populate({ path: 'members.user', select: ['name', 'email'] });
+    await Promise.all([
+      newAccount.populate({
+        path: 'operationsManager',
+        select: ['name', 'email'],
+      }),
+      newAccount.populate({
+        path: 'members.user',
+        select: ['name', 'email'],
+      }),
+    ]);
 
     newAccount = await newAccount.save();
 

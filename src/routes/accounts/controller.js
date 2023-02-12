@@ -67,9 +67,23 @@ export const create = async (req) => {
     };
 
     // save account in DB
-    const newAccount = await (
-      await new AccountModel(accountDB).save()
-    ).populate();
+    let newAccount = new AccountModel(accountDB);
+    newAccount.populate({
+      path: 'operationsManager',
+      select: ['name', 'email'],
+    });
+    newAccount.populate({ path: 'members.user', select: ['name', 'email'] });
+
+    newAccount = await newAccount.save();
+
+    if (!newAccount) {
+      // TODO: implement logger
+      console.log('Account cannot be created on DB.');
+      return httpResponseHandler.unprocessableEntity(
+        'Account cannot be created, please retry later.'
+      );
+    }
+
     const response = httpResponseHandler.created(
       newAccount,
       'Account created successfully'

@@ -1,7 +1,12 @@
 import httpResponseHandler from '../../commons/httpResponseHandler';
 import UserModel from '../../models/User';
+
 import passwordServiceFactory from '../../services/password/passwordServiceFactory';
 import signupServiceFactory from '../../services/signup/signupServiceFactory';
+
+import Joi from 'joi';
+import { handleAsync } from '../../commons/validator';
+import updateUserValidatorFactory from '../../validators/users/update/validatorFactory';
 
 export const create = async (req) => {
   try {
@@ -33,8 +38,15 @@ export const update = async (req) => {
       params: { userId },
     } = req;
 
-    // TODO:
-    // validate userId
+    // validate params (userId)
+    const paramsValidation = await handleAsync([
+      Joi.string().required().validateAsync(userId),
+    ]);
+    if (!paramsValidation.valid) {
+      // TODO: implement logger
+      console.log('Params are invalid');
+      return httpResponseHandler.badRequest(paramsValidation.stringError);
+    }
 
     // Verify user exist on DB
     const foundUser = await UserModel.findById(userId);
@@ -44,11 +56,18 @@ export const update = async (req) => {
       return httpResponseHandler.notFound('Target user cannot be found on DB.');
     }
 
-    // TODO:
-    // updateUserValidatorFactory.create(foundUser.role);
-
-    // TODO: validate request
-    // const validation = await handleAsync();
+    // create user validator considering his role
+    const updateUserValidator = updateUserValidatorFactory.createValidator(
+      foundUser.role
+    );
+    const validation = await handleAsync([
+      updateUserValidator.validateAsync(body),
+    ]);
+    if (!validation.valid) {
+      // TODO: implement logger
+      console.log('Validation errors on request body');
+      return httpResponseHandler.badRequest(validation.stringError);
+    }
 
     // Update user info
     const updateUser = await UserModel.findByIdAndUpdate(userId, body);
@@ -59,9 +78,11 @@ export const update = async (req) => {
         'User cannot be updated, please try again later.'
       );
     }
+
+    return httpResponseHandler.ok(updateUser);
   } catch (error) {
     // TODO: implement logger
-    console.log('Servver error');
+    console.log('Server error');
     console.log(error);
     return httpResponseHandler.serverError(error.message);
   }

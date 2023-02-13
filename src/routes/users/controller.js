@@ -26,4 +26,45 @@ export const create = async (req) => {
   }
 };
 
-export default { create };
+export const update = async (req) => {
+  try {
+    const {
+      body,
+      params: { userId },
+    } = req;
+
+    // TODO:
+    // validate userId
+
+    // Verify user exist on DB
+    const foundUser = await UserModel.findById(userId);
+    if (!foundUser) {
+      // TODO: implement logger
+      console.log('Target user does not exist on DB');
+      return httpResponseHandler.notFound('Target user cannot be found on DB.');
+    }
+
+    // TODO:
+    // updateUserValidatorFactory.create(foundUser.role);
+
+    // TODO: validate request
+    // const validation = await handleAsync();
+
+    // Update user info
+    const updateUser = await UserModel.findByIdAndUpdate(userId, body);
+    if (!updateUser) {
+      // TODO: implement logger
+      console.log('User cannot be updated');
+      return httpResponseHandler.unprocessableEntity(
+        'User cannot be updated, please try again later.'
+      );
+    }
+  } catch (error) {
+    // TODO: implement logger
+    console.log('Servver error');
+    console.log(error);
+    return httpResponseHandler.serverError(error.message);
+  }
+};
+
+export default { create, update };

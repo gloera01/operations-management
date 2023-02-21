@@ -1,8 +1,10 @@
 import usersController from '../../src/routes/users/controller';
 import { getMockReq, getMockRes } from '@jest-mock/express';
 import signupServiceFactory from '../../src/services/signup/signupServiceFactory';
+import UserModel from '../../src/models/User';
 
 jest.mock('../../src/services/signup/signupServiceFactory');
+jest.mock('../../src/models/User', () => ({ paginate: jest.fn() }));
 
 const { res: mockRes } = getMockRes();
 
@@ -31,5 +33,31 @@ describe('UsersController create', () => {
 
     // Assert
     expect(loginResponse).toMatchObject(expectedResponse);
+  });
+});
+
+describe('UsersController get', () => {
+  test('When filters are valid, expect a successful response', async () => {
+    // Arrange
+    const expectedPayload = { docs: [{ email: 'jhon.doe@mailinator.com' }] };
+    const expectedResponse = {
+      statusCode: 200,
+      payload: expectedPayload,
+    };
+    const req = getMockReq({
+      query: {
+        email: 'jhon.doe@mailinator.com',
+      },
+    });
+
+    UserModel.paginate.mockResolvedValue({
+      docs: expectedPayload.docs,
+    });
+
+    // Act
+    const response = await usersController.get(req);
+
+    // Assert
+    expect(response).toMatchObject(expectedResponse);
   });
 });

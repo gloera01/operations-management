@@ -88,7 +88,11 @@ User permissions will be validated per role on a middleware apart before an acti
   - reset password?
 - Users controller
   - create (ok)
-  - Read
+  - Read (martes)
+    - create users get endpoint (ok)
+    - add inputs validator (ok)
+    - add unit test for happy path (ok)
+    - add filters create and modified dates (pending)
   - Update (ok)
   - Delete
 - Accounts controller

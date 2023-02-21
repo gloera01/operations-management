@@ -7,6 +7,7 @@ import signupServiceFactory from '../../services/signup/signupServiceFactory';
 import Joi from 'joi';
 import { handleAsync } from '../../commons/validator';
 import updateUserValidatorFactory from '../../validators/users/update/validatorFactory';
+import getUsersValidator from '../../validators/users/getUsers';
 
 export const create = async (req) => {
   try {
@@ -88,4 +89,62 @@ export const update = async (req) => {
   }
 };
 
-export default { create, update };
+export const get = async (req) => {
+  try {
+    const defaultFilters = {
+      page: 1,
+      pageSize: 10,
+      sortBy: 'createDate',
+      sortOrder: 'desc',
+    };
+
+    // inputs validation
+    const validation = await handleAsync([
+      getUsersValidator.validateAsync(req.query),
+    ]);
+    if (!validation.valid) {
+      // TODO: implement logger
+      console.log('Validation errors');
+      return httpResponseHandler.badRequest(validation.stringError);
+    }
+
+    // configure filters
+    const allFilters = { ...defaultFilters, ...req.query };
+    const filters = {};
+    const options = {
+      page: allFilters.page,
+      limit: allFilters.pageSize,
+      sort: {
+        [allFilters.sortBy]: allFilters.sortOrder,
+      },
+    };
+
+    if (allFilters.email) {
+      filters.email = new RegExp(`.*${allFilters.email}.*`, 'i');
+    }
+
+    if (allFilters.name) {
+      filters.name = new RegExp(`.*${allFilters.name}.*`, 'i');
+    }
+
+    if (allFilters.active !== undefined) {
+      filters.active = allFilters.active;
+    }
+
+    if (allFilters.role) {
+      filters.role = allFilters.role;
+    }
+
+    // Dates are not supported yet
+
+    // get from DB
+    const usersRes = await UserModel.paginate(filters, options);
+    return httpResponseHandler.ok(usersRes);
+  } catch (error) {
+    // TODO: implement logger
+    console.log(error);
+    return httpResponseHandler.serverError(error.message);
+  }
+};
+
+export default { create, update, get };

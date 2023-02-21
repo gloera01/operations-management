@@ -18,6 +18,12 @@ const router = Router()
     requireAuth,
     requirePermissions([ADMIN, SUPERADMIN]),
     withHttpResponse(usersController.update)
+  )
+  .get(
+    '/',
+    requireAuth,
+    requirePermissions([ADMIN, SUPERADMIN]),
+    withHttpResponse(usersController.get)
   );
 
 export default router;

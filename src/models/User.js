@@ -1,6 +1,6 @@
 import { Schema, model } from 'mongoose';
-// paginate
 import roles from '../constants/roles';
+import mongoosePaginate from 'mongoose-paginate-v2';
 
 const UserSchema = new Schema({
   name: {
@@ -49,5 +49,7 @@ const UserSchema = new Schema({
   },
   resumeLink: { type: String, required: false },
 });
+
+UserSchema.plugin(mongoosePaginate);
 
 export default model('User', UserSchema);

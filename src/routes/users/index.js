@@ -1,5 +1,5 @@
 import { Router } from 'express';
-import { ADMIN, SUPERADMIN } from '../../constants/roles';
+import { ADMIN, SUPERADMIN, USER } from '../../constants/roles';
 import usersController from './controller';
 
 import withHttpResponse from '../../middlewares/withHttpResponse';
@@ -22,7 +22,7 @@ const router = Router()
   .get(
     '/',
     requireAuth,
-    requirePermissions([ADMIN, SUPERADMIN]),
+    requirePermissions([ADMIN, SUPERADMIN, USER]),
     withHttpResponse(usersController.get)
   );
 

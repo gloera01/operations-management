@@ -1,13 +1,14 @@
-import { Schema, model } from 'mongoose';
+import { Schema, model, ObjectId } from 'mongoose';
 import AccountMember from './schemas/AccountMember';
-
-// TODO: add pagination
+import mongoosePaginate from 'mongoose-paginate-v2';
 
 const OperationHistory = new Schema({
   createDate: { type: Date, default: Date.now, required: false },
-  account: { type: String, required: true },
+  account: { type: ObjectId, required: true, ref: 'Account' },
   details: { type: String, required: true },
-  user: AccountMember,
+  member: AccountMember,
 });
+
+OperationHistory.plugin(mongoosePaginate);
 
 export default model('OperationHistory', OperationHistory);

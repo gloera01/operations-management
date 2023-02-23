@@ -1,11 +1,14 @@
 import httpResponseHandler from '../../commons/httpResponseHandler';
 import AccountModel from '../../models/Account';
 import UserModel from '../../models/User';
+import OperationHistoryModel from '../../models/OperationHistory';
 
 import { handleAsync } from '../../commons/validator';
 import { createAccountValidator } from '../../validators/accounts';
 
 import AccountMembersService from '../../services/accountMembersService';
+
+import { ADDED } from '../../constants/accountTeamMemberActions';
 
 export const create = async (req) => {
   try {
@@ -68,6 +71,8 @@ export const create = async (req) => {
 
     // save account in DB
     let newAccount = new AccountModel(accountDB);
+
+    // include operations manager user data and team members data
     await Promise.all([
       newAccount.populate({
         path: 'operationsManager',
@@ -87,6 +92,22 @@ export const create = async (req) => {
       return httpResponseHandler.unprocessableEntity(
         'Account cannot be created, please retry later.'
       );
+    }
+
+    // save members on history logs
+    if (body.members?.length) {
+      // TODO: implement logger
+      console.log('Save members operations');
+      // prepare history log for each team member
+      const records = body.members.map((tm) => ({
+        account: newAccount._id,
+        details: ADDED,
+        member: {
+          user: tm.userId,
+          assignation: { startDate: tm.startDate, endDate: tm.endDate },
+        },
+      }));
+      await OperationHistoryModel.insertMany(records);
     }
 
     const response = httpResponseHandler.created(

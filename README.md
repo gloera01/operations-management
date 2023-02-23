@@ -65,7 +65,7 @@ Run `npm run test`
 
 Run `npm run test:coverage` for coverage details
 
-TODO: add details how to view coverage report
+Open file `coverage/icov-report/index.html` to view coverage report
 
 ## Todos / pendings
 
@@ -83,31 +83,29 @@ User permissions will be validated per role on a middleware apart before an acti
 
 ### Endpoints development
 
-- Auth controller
-  - login (ok)
+- Auth controller (ok)
+  - login ✅
   - reset password?
-- Users controller
-  - create (ok)
-  - Read (martes)
-    - create users get endpoint (ok)
-    - add inputs validator (ok)
-    - add unit test for happy path (ok)
-    - add filters create and modified dates (pending)
-  - Update (ok)
+- Users controller (ok)
+  - create ✅
+  - Read ✅
+    - add filters for: create and modified dates (pending)
+  - Update ✅
   - Delete
 - Accounts controller
-  - create (WIP)
-    - define behavior of history, focuses on members assignment, unassignment
-  - Read
+  - create ✅
+  - Read (viernes)
   - Update
+    - not allowed to update members
   - Delete
 - Account members controller
   - Create (add a member in an account)
   - Update?
-  - Delete?
+    - assignation
+  - Delete (remove account team members)
 - Operations history controller
-  - Create
-  - Read
+  - Read (viernes)
+    - filtered search
 
 ### System logger
 

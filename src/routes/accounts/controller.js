@@ -4,7 +4,10 @@ import UserModel from '../../models/User';
 import OperationHistoryModel from '../../models/OperationHistory';
 
 import { handleAsync } from '../../commons/validator';
-import { createAccountValidator } from '../../validators/accounts';
+import {
+  createAccountValidator,
+  getAccountsValidator,
+} from '../../validators/accounts';
 
 import AccountMembersService from '../../services/accountMembersService';
 
@@ -126,4 +129,63 @@ export const create = async (req) => {
   }
 };
 
-export default { create };
+export const get = async (req) => {
+  try {
+    const defaultFilters = {
+      page: 1,
+      pageSize: 10,
+      sortBy: 'createDate',
+      sortOrder: 'desc',
+    };
+
+    // validate filters
+    const validation = await handleAsync([
+      getAccountsValidator.validateAsync(req.query),
+    ]);
+    if (!validation.valid) {
+      // TODO: implement logger
+      console.log('Validation errors');
+      return httpResponseHandler.badRequest(validation.stringError);
+    }
+
+    // configure filters
+    const requestFilters = { ...defaultFilters, ...req.query };
+    const filters = {};
+    const options = {
+      populate: {
+        path: 'members.user',
+        select:
+          'name email active role createDate modifiedDate englishLevel techSkills resumeLink',
+      },
+      page: requestFilters.page,
+      limit: requestFilters.pageSize,
+      sort: {
+        [requestFilters.sortBy]: requestFilters.sortOrder,
+      },
+    };
+
+    if (requestFilters.name) {
+      filters.name = new RegExp(`.*${requestFilters.name}.*`, 'i');
+    }
+    if (requestFilters.client) {
+      filters.client = new RegExp(`.*${requestFilters.client}.*`, 'i');
+    }
+    if (requestFilters.operationsManager) {
+      filters.operationsManager = new RegExp(
+        `.*${requestFilters.operationsManager}.*`,
+        'i'
+      );
+    }
+
+    const getRes = await AccountModel.paginate(filters, options);
+    // TODO: implement logger
+    console.log(getRes);
+    return httpResponseHandler.ok(getRes);
+  } catch (error) {
+    // TODO: implement logger
+    console.log(error);
+    return httpResponseHandler.serverError(error.message);
+  }
+};
+
+export default { create, get };

@@ -83,10 +83,10 @@ User permissions will be validated per role on a middleware apart before an acti
 
 ### Endpoints development
 
-- Auth controller (ok)
-  - login ✅
+- Auth controller ✅
+  - login
   - reset password?
-- Users controller (ok)
+- Users controller ✅
   - create ✅
   - Read ✅
     - add filters for: create and modified dates (pending)
@@ -94,18 +94,22 @@ User permissions will be validated per role on a middleware apart before an acti
   - Delete
 - Accounts controller
   - create ✅
-  - Read (viernes)
+  - Read ✅
+    - create unit test (lunes)
   - Update
     - not allowed to update members
   - Delete
 - Account members controller
-  - Create (add a member in an account)
+  - Create ✅
+    - save operation on history
+    - add unit test
   - Update?
-    - assignation
-  - Delete (remove account team members)
+    - assignation dates
+  - Delete (remove team member from account)
 - Operations history controller
-  - Read (viernes)
+  - Read (lunes)
     - filtered search
+    - unit test
 
 ### System logger
 

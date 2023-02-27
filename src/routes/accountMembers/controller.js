@@ -42,21 +42,22 @@ export const create = async (req) => {
     }
 
     // verify team member is not already a member
-    const foundMemberInAccount = AccountModel.find({
+    const foundMemberInAccount = await AccountModel.findOne({
       id: accountId,
       'members.user': userId,
     });
     if (foundMemberInAccount) {
       // TODO: implement logger
-      console.log('Member is on account');
+      console.log(`Member with id: ${userId} is already a member`);
       return httpResponseHandler.conflict('Already a member');
     }
 
     // add new team member
-    targetAccount.members.push({
+    const accountMember = {
       assignation: { startDate: body.startDate, endDate: body.endDate },
       user: body.userId,
-    });
+    };
+    targetAccount.members.push(accountMember);
     const saveResponse = await targetAccount.save();
 
     // TODO: implement logger

@@ -1,10 +1,12 @@
 import httpResponseHandler from '../../commons/httpResponseHandler';
 import UserModel from '../../models/User';
 import AccountModel from '../../models/Account';
+import OperationHistoryModel from '../../models/OperationHistory';
 
 import Joi from 'joi';
 import { handleAsync } from '../../commons/validator';
 import { createMemberValidator } from '../../validators/accountMembers';
+import { ADDED } from '../../constants/accountTeamMemberActions';
 
 export const get = async (req) => {};
 
@@ -59,6 +61,13 @@ export const create = async (req) => {
     };
     targetAccount.members.push(accountMember);
     const saveResponse = await targetAccount.save();
+
+    // save operation on history
+    await new OperationHistoryModel({
+      account: saveResponse.id,
+      details: ADDED,
+      member: accountMember,
+    }).save();
 
     // TODO: implement logger
     console.log(saveResponse);

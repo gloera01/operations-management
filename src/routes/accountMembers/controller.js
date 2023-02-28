@@ -44,11 +44,11 @@ export const create = async (req) => {
     }
 
     // verify team member is not already a member
-    const foundMemberInAccount = await AccountModel.findOne({
+    const foundByMember = await AccountModel.findOne({
       id: accountId,
       'members.user': userId,
     });
-    if (foundMemberInAccount) {
+    if (foundByMember) {
       // TODO: implement logger
       console.log(`Member with id: ${userId} is already a member`);
       return httpResponseHandler.conflict('Already a member');
@@ -63,11 +63,11 @@ export const create = async (req) => {
     const saveResponse = await targetAccount.save();
 
     // save operation on history
-    await new OperationHistoryModel({
+    await OperationHistoryModel.create({
       account: saveResponse.id,
       details: ADDED,
       member: accountMember,
-    }).save();
+    });
 
     // TODO: implement logger
     console.log(saveResponse);

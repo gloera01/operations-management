@@ -25,7 +25,7 @@ export const create = async (req) => {
     }
 
     // search target account
-    const targetAccount = await AccountModel.findById(accountId);
+    let targetAccount = await AccountModel.findById(accountId);
     if (!targetAccount) {
       // TODO: implement logger
       console.log('Target account was not found');
@@ -34,8 +34,8 @@ export const create = async (req) => {
 
     // verify new member is a registered user
     const { userId } = body;
-    const user = await UserModel.findById(userId);
-    if (!user) {
+    const registeredUser = await UserModel.findById(userId);
+    if (!registeredUser) {
       // TODO: implement logger
       console.log('Incoming member is not a registered user.');
       return httpResponseHandler.badRequest(
@@ -43,35 +43,40 @@ export const create = async (req) => {
       );
     }
 
-    // verify team member is not already a member
-    const foundByMember = await AccountModel.findOne({
+    // verify team member does not belong to the team yet
+    const accountMember = await AccountModel.findOne({
       id: accountId,
       'members.user': userId,
     });
-    if (foundByMember) {
+    if (accountMember) {
       // TODO: implement logger
       console.log(`Member with id: ${userId} is already a member`);
       return httpResponseHandler.conflict('Already a member');
     }
 
     // add new team member
-    const accountMember = {
+    targetAccount.members.push({
       assignation: { startDate: body.startDate, endDate: body.endDate },
       user: body.userId,
-    };
-    targetAccount.members.push(accountMember);
-    const saveResponse = await targetAccount.save();
+    });
+    targetAccount = await targetAccount.save();
 
     // save operation on history
     await OperationHistoryModel.create({
-      account: saveResponse.id,
+      account: { client: targetAccount.client, name: targetAccount.name },
       details: ADDED,
-      member: accountMember,
+      user: {
+        name: registeredUser.name,
+        email: registeredUser.email,
+        role: registeredUser.role,
+        startDate: body.startDate,
+        endDate: body.endDate,
+      },
     });
 
     // TODO: implement logger
-    console.log(saveResponse);
-    return httpResponseHandler.created(saveResponse);
+    console.log(targetAccount);
+    return httpResponseHandler.created(targetAccount);
   } catch (error) {
     // TODO: implement logger
     console.log(error);

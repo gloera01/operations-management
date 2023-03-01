@@ -48,10 +48,10 @@ export const create = async (req) => {
     const teamMembersService = new AccountMembersService(UserModel);
 
     // verify incoming members are existing DB users
-    const allMembersExistOnDB = await teamMembersService.verifyExist(
+    const existingMembersResponse = await teamMembersService.verifyExist(
       body.members
     );
-    if (allMembersExistOnDB.notFound.length) {
+    if (existingMembersResponse.notFound.length) {
       // TODO: implement logger
       console.log('There are some team members which are not valid');
       return httpResponseHandler.badRequest(
@@ -97,20 +97,32 @@ export const create = async (req) => {
       );
     }
 
-    // save members on history logs
+    // save on history logs
     if (body.members?.length) {
       // TODO: implement logger
       console.log('Save members operations');
-      // prepare history log for each team member
-      const records = body.members.map((tm) => ({
-        account: newAccount._id,
-        details: ADDED,
-        member: {
-          user: tm.userId,
-          assignation: { startDate: tm.startDate, endDate: tm.endDate },
-        },
-      }));
-      await OperationHistoryModel.insertMany(records);
+
+      // prepare history log DB object for each team member
+      const usersMembers = body.members.map((m) => {
+        const userData = existingMembersResponse.found.find(
+          (us) => us.id === m.userId
+        );
+        return {
+          details: ADDED,
+          account: {
+            client: newAccount.client,
+            name: newAccount.name,
+          },
+          user: {
+            name: userData.name,
+            email: userData.email,
+            role: userData.role,
+            startDate: m.startDate,
+            endDate: m.endDate,
+          },
+        };
+      });
+      await OperationHistoryModel.insertMany(usersMembers);
     }
 
     const response = httpResponseHandler.created(

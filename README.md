@@ -67,6 +67,11 @@ Run `npm run test:coverage` for coverage details
 
 Open file `coverage/icov-report/index.html` to view coverage report
 
+### Notes
+
+When mocking mongoose models, the implementation should be provided. Example:
+`jest.mock('../../src/models/User', () => ({ paginate: jest.fn() }));`
+
 ## Todos / pendings
 
 ### Model schemas
@@ -91,24 +96,26 @@ User permissions will be validated per role on a middleware apart before an acti
   - Read ✅
     - add filters for: create and modified dates (pending)
   - Update ✅
-  - Delete
+  - Delete (jueves)
 - Accounts controller
   - create ✅
   - Read ✅
-    - create unit test (lunes)
   - Update
+    - name
+      - validate name does not conflict with an existing one
+    - client
     - not allowed to update members
   - Delete
+    - soft delete
 - Account members controller
   - Create ✅
-    - save operation on history
-    - add unit test
   - Update?
     - assignation dates
-  - Delete (remove team member from account)
+  - Delete ✅
+    - Add unit test
 - Operations history controller
-  - Read (lunes)
-    - filtered search
+  - Read ✅
+    - support dates
     - unit test
 
 ### System logger

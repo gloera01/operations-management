@@ -18,5 +18,11 @@ const router = Router({ mergeParams: true })
     requireAuth,
     requirePermissions([ADMIN, SUPERADMIN]),
     withHttpResponse(controller.get)
+  )
+  .delete(
+    '/:userId',
+    requireAuth,
+    requirePermissions([ADMIN, SUPERADMIN]),
+    withHttpResponse(controller.remove)
   );
 export default router;

@@ -1,5 +1,5 @@
 export const ADDED = 'has been added to the team successfully.';
-export const REMOVED = 'has ben removed from the team.';
+export const REMOVED = 'has been removed from the team.';
 
 const ACCOUNT_TEAM_MEMBER_ACTIONS = { ADDED, REMOVED };
 

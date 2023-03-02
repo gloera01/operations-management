@@ -6,7 +6,7 @@ import OperationHistoryModel from '../../models/OperationHistory';
 import Joi from 'joi';
 import { handleAsync } from '../../commons/validator';
 import { createMemberValidator } from '../../validators/accountMembers';
-import { ADDED } from '../../constants/accountTeamMemberActions';
+import { ADDED, REMOVED } from '../../constants/accountTeamMemberActions';
 
 export const get = async (req) => {};
 
@@ -84,4 +84,64 @@ export const create = async (req) => {
   }
 };
 
-export default { get, create };
+export const remove = async (req) => {
+  try {
+    const { accountId, userId } = req.params;
+    // Inpunts Validation
+    const validation = await handleAsync([
+      Joi.string().label('accountId').required().validateAsync(accountId),
+      Joi.string().label('userId').required().validateAsync(userId),
+    ]);
+    if (!validation.valid) {
+      // TODO: implement logger
+      console.log('Validation errors');
+      httpResponseHandler.badRequest(validation.stringError);
+    }
+
+    // verify account exist
+    const targetAccount = await AccountModel.findById(accountId);
+    if (!targetAccount) {
+      // TODO: implement logger
+      console.log('Account was not found');
+      return httpResponseHandler.badRequest('Target account was not found');
+    }
+
+    // verify target member belongs on target account
+    const targetMember = targetAccount.members.find(
+      (m) => m.user?.toString() === userId
+    );
+    if (!targetMember) {
+      // TODO: implement logger
+      console.log('Target member is not found');
+      return httpResponseHandler.notFound('Target member was not found.');
+    }
+
+    // Remove member from account
+    targetAccount.members = targetAccount.members.filter(
+      (mm) => mm.user?.toString() !== userId
+    );
+    await targetAccount.save();
+
+    // Save operation on history
+    const userInfo = await UserModel.findById(userId);
+
+    await OperationHistoryModel.create({
+      details: REMOVED,
+      account: { client: targetAccount.client, name: targetAccount.name },
+      user: {
+        name: userInfo.name,
+        email: userInfo.email,
+        role: userInfo.role,
+        startDate: targetMember.assignation.startDate,
+        endDate: targetMember.assignation.endDate,
+      },
+    });
+    return httpResponseHandler.ok(targetMember);
+  } catch (error) {
+    // TODO: implement logger
+    console.log(error);
+    return httpResponseHandler.serverError(error.message);
+  }
+};
+
+export default { get, create, remove };
